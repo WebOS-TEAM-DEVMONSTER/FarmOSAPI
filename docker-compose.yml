@@ -1,0 +1,21 @@
+version: '3'
+services:
+  farmos-app:
+    image: snowmate318/farmos-app
+    container_name: my-farmos-app
+    ports:
+      - "8080:8080"
+    networks:
+      - farmos-network
+
+  nginx:
+    image: farmos-nginx
+    container_name: my-farmos-nginx
+    ports:
+      - "80:80"
+    networks:
+      - farmos-network
+
+networks:
+  farmos-network:
+    driver: bridge
