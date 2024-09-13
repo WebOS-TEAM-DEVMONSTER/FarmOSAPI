@@ -2,6 +2,7 @@ version: '3'
 services:
   farmos-app:
     image: snowmate318/farmos-app
+    platform: linux/amd64
     container_name: my-farmos-app
     ports:
       - "8080:8080"
@@ -9,7 +10,8 @@ services:
       - farmos-network
 
   nginx:
-    image: farmos-nginx
+    image: snowmate318/farmos-nginx
+    platform: linux/amd64
     container_name: my-farmos-nginx
     ports:
       - "80:80"
