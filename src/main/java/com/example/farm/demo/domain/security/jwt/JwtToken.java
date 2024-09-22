@@ -1,4 +1,4 @@
-package com.example.farm.demo.auth;
+package com.example.farm.demo.domain.security.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,8 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor
-public class TokenInfo {
+public class JwtToken {
+
     private String grantType;
     private String accessToken;
     private String refreshToken;

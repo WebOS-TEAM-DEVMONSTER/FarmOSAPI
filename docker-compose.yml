@@ -1,23 +1,23 @@
-version: '3'
-services:
-  farmos-app:
-    image: snowmate318/farmos-app
-    platform: linux/amd64
-    container_name: my-farmos-app
-    ports:
-      - "8080:8080"
-    networks:
-      - farmos-network
-
-  nginx:
-    image: snowmate318/farmos-nginx
-    platform: linux/amd64
-    container_name: my-farmos-nginx
-    ports:
-      - "80:80"
-    networks:
-      - farmos-network
-
-networks:
-  farmos-network:
-    driver: bridge
+#version: '3'
+#services:
+#  farmos-app:
+#    image: snowmate318/farmos-app
+#    platform: linux/amd64
+#    container_name: my-farmos-app
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - farmos-network
+#
+#  nginx:
+#    image: snowmate318/farmos-nginx
+#    platform: linux/amd64
+#    container_name: my-farmos-nginx
+#    ports:
+#      - "80:80"
+#    networks:
+#      - farmos-network
+#
+#networks:
+#  farmos-network:
+#    driver: bridge
