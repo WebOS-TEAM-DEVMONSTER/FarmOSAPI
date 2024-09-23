@@ -69,3 +69,4 @@ public class AuthController {
 //        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
 //    }
 }
+

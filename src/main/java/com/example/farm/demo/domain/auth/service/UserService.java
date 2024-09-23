@@ -1,6 +1,9 @@
 package com.example.farm.demo.domain.auth.service;
 
 
+import com.example.farm.demo.domain.auth.dto.UserDto;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.example.farm.demo.domain.auth.dto.LoginDto;
 import com.example.farm.demo.domain.auth.dto.RegisterDto;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,20 +51,23 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         System.out.println("실행됨");
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
 
-        System.out.println(user);
-
-        if (user.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(email + "를 찾을 수 없습니다");
         }
 
-        // Spring Security의 UserDetails 구현체를 반환
-        User foundUser = user.get();
+        User foundUser = userOptional.get();
+
+        // 권한을 설정하는 부분: ERole을 GrantedAuthority로 변환
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(foundUser.getRole().name()));
+
+        // 권한 리스트를 UserDetails 객체에 포함시켜 반환
         return new org.springframework.security.core.userdetails.User(
                 foundUser.getUsername(),
                 foundUser.getPassword(),
-                new ArrayList<>() // 사용자의 권한(roles)을 여기에 추가할 수 있음
+                authorities // 여기에 권한 리스트 추가
         );
     }
 
@@ -115,31 +122,14 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
+    public UserDto findByUsername(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            return userOptional.get().convertToUserDto();
+        }
+        return null;
+    }
+
 }
 
-//import com.example.farm.demo.domain.auth.model.User;
-//import com.example.farm.demo.domain.auth.repository.UserRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.stereotype.Service;
-//
-//@Service
-//public class UserService implements UserDetailsService{
-//
-//    @Autowired
-//    UserRepository userRepository;
-//
-//    @Override
-//    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-//        return userRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("유저 이름을 찾을 수 없습니다."));
-//    }
-//
-//    public User findById(String id) {
-//        return userRepository.findById(id)
-//                .orElseThrow(() -> new UsernameNotFoundException("유저 id를 찾을 수 없습니다."));
-//    }
-//
-//}
 

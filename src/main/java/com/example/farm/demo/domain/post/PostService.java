@@ -1,4 +1,4 @@
-package com.example.farm.demo.post;
+package com.example.farm.demo.domain.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.example.farm.demo.farm_info;
+package com.example.farm.demo.domain.farm_info;
 import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

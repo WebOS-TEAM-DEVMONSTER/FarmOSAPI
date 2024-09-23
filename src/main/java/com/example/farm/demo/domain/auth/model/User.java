@@ -1,12 +1,11 @@
 package com.example.farm.demo.domain.auth.model;
 
+import com.example.farm.demo.domain.auth.dto.UserDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +19,8 @@ import java.util.Date;
 
 @Data
 @Builder
+@Getter
+@Setter
 @Document(collection = "users")
 public class User implements UserDetails {
 
@@ -87,68 +88,17 @@ public class User implements UserDetails {
         return true;
     }
 
-    public String getId() {
-        return id;
-    }
+    public UserDto convertToUserDto(){
+        String tmpProfile = "";
+        if(profileImage==null || !profileImage.isEmpty()){
+            tmpProfile = profileImage;
+        }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setUsername(@NonNull @Size(max = 20) String username) {
-        this.username = username;
-    }
-
-    public @NonNull @Size(max = 50) @Email String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NonNull @Size(max = 50) @Email String email) {
-        this.email = email;
-    }
-
-    public void setPassword(@NonNull @Size(max = 120) String password) {
-        this.password = password;
-    }
-
-    public @NonNull @Pattern(regexp = "^(010-\\d{4}-\\d{4}|010\\d{8})$", message = "Invalid phone number format") String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(@NonNull @Pattern(regexp = "^(010-\\d{4}-\\d{4}|010\\d{8})$", message = "Invalid phone number format") String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public ERole getRole() {
-        return role;
-    }
-
-    public void setRole(ERole role) {
-        this.role = role;
+        return UserDto.builder()
+                .id(id)
+                .username(username)
+                .profileImage(tmpProfile)
+                .build();
     }
 }
 

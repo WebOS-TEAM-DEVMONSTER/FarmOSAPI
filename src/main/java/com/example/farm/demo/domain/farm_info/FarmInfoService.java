@@ -1,4 +1,4 @@
-package com.example.farm.demo.farm_info;
+package com.example.farm.demo.domain.farm_info;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
