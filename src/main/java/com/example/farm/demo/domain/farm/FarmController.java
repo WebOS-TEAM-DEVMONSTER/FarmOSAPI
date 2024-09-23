@@ -1,4 +1,4 @@
-package com.example.farm.demo.farm;
+package com.example.farm.demo.domain.farm;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.example.farm.demo.farm_info;
+package com.example.farm.demo.domain.farm_info;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

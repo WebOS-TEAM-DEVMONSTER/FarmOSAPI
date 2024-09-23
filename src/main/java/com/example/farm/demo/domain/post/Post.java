@@ -1,4 +1,4 @@
-package com.example.farm.demo.post;
+package com.example.farm.demo.domain.post;
 
 import java.util.Date;
 

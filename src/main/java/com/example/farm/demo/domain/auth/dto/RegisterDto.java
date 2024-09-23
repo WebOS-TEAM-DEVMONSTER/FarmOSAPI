@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class RegisterDto {
 
     @NotBlank(message = "이름을 입력해주세요.")
+    @Size(max=20, message = "최대 20자 까지만 입력할 수 있어요")
     private String username;
 
     @Email(message = "올바른 형식의 이메일 주소를 입력해주세요.")
