@@ -3,6 +3,7 @@ package com.example.farm.demo.domain.farm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,10 +13,12 @@ public class FarmService {
     @Autowired
     private FarmRepository farmRepository;
 
-
-    public Optional<Farm> getFarmById(String id) {
-        return farmRepository.findById(id);
+    public Farm getFarmById(String id) {
+        return farmRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("해당 ID의 농장이 없습니다."));
     }
+
+
 
     public List<Farm> getFarmsByUserId(String userId) {
         return farmRepository.findByUserId(userId);
@@ -29,17 +32,23 @@ public class FarmService {
         return farmRepository.save(farm);
     }
 
-    public Farm updateFarm(String id, Farm farmDetails) {
-        Optional<Farm> farmOptional = farmRepository.findById(id);
+    public void updateUserId(String farmId, String newUserId) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setUserId(newUserId);
+        farmRepository.save(farm);
+    }
 
-        if (farmOptional.isPresent()) {
-            Farm farm = farmOptional.get();
-            farm.setFarmName(farmDetails.getFarmName());
-            farm.setFarmCategory(farmDetails.getFarmCategory());
-            return farmRepository.save(farm);
-        } else {
-            throw new RuntimeException("헤딩 ID에 해당하는 농장이 없습니다. " + id);
-        }
+
+    public void updateFarmName(String farmId, String newFarmName) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setFarmName(newFarmName);
+        farmRepository.save(farm);
+    }
+
+    public void updateFarmCategoryName(String farmId, String newFarmCategoryName) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setFarmCategory(newFarmCategoryName);
+        farmRepository.save(farm);
     }
 
     public void deleteFarm(String id) {

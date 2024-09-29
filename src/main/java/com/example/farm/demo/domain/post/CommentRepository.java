@@ -1,4 +1,4 @@
-package com.example.farm.demo.domain.comment;
+package com.example.farm.demo.domain.post;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

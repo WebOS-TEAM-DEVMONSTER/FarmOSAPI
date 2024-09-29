@@ -1,63 +1,45 @@
 package com.example.farm.demo.domain.post;
 
 import java.util.Date;
+import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Getter
+@Setter
 @Document(collection = "posts")
 public class Post {
     @Id private String id;
 
+    @NonNull
+    @NotBlank
+    @Size(max = 50)
     private String title;
+
+    @NonNull
+    @NotBlank
     private String content;
+
+    private List<String> tags;
+
+    @NonNull
+    private String farmId;
+
+    @NonNull
     private String authorId;
-    private String authorName;
-    private String authorProfileImage;
+
+    private List<String> authorProfileImages;
+
+    @CreatedDate
     private Date createdAt;
 
-    Post() {
-        this.createdAt = new Date();
-    }
-
-    public String getId() {
-        return id;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-   
-
-    public String getAuthorId() {
-        return authorId;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-    public String getAuthorProfileImage() {
-        return authorProfileImage;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-    
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-
-    
-
+    // Embedded 모델링
+    private List<Comment> comments;
 }

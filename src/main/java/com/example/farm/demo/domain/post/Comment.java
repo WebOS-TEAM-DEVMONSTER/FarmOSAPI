@@ -1,4 +1,4 @@
-package com.example.farm.demo.domain.comment;
+package com.example.farm.demo.domain.post;
 import java.util.Date;
 
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Document(collection = "comments")
 public class Comment {
     @Id private String id;
 

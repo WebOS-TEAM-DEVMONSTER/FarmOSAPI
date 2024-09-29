@@ -7,4 +7,5 @@ import java.util.List;
 public interface PostRepository extends MongoRepository<Post, String> {
     List<Post> findByAuthorId(String authorId);
     List<Post> findByTitleContaining(String title);
+    List<Post> findByFarmId(String farmId);
 }
