@@ -1,52 +1,113 @@
 package com.example.farm.demo.domain.post;
 
+import com.example.farm.demo.domain.auth.model.User;
+import com.example.farm.demo.domain.auth.repository.UserRepository;
+import com.example.farm.demo.domain.post.Dto.CommentDto;
+import com.example.farm.demo.domain.post.model.Comment;
+import com.example.farm.demo.domain.post.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CommentService {
 
     @Autowired
-    private CommentRepository commentRepository;
+    private PostRepository postRepository;
 
-    public List<Comment> getCommentsByPostId(String postId) {
-        return commentRepository.findByPostId(postId);
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<Comment> getAllCommentsByPostId(String postId) {
+
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글을 찾지 못했씁니다."));
+        return post.sortedComments();
     }
 
-    public Comment getCommentById(String commentId) {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
-
-        if (commentOptional.isPresent()) {
-            return commentOptional.get();
-        } else {
-            throw new RuntimeException("Comment not found with id " + commentId);
-        }
+    public void createComment(String postId, CommentDto commentCreateDto, Authentication authentication) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(()->new RuntimeException("id에 해당하는 유저이름이 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글이 없습니다."));
+        Comment comment = commentCreateDto.convertDtoToComment(user);
+        post.addComment(comment);
+        postRepository.save(post);
     }
 
-
-    public Comment createComment(String postId, Comment comment) {
-        comment.setPostId(postId);
-        return commentRepository.save(comment);
+    public void createTaggedComment(String postId, String commentId, CommentDto commentCreateDto, Authentication authentication) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(()->new RuntimeException("id에 해당하는 유저이름이 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글이 없습니다."));
+        Comment comment = commentCreateDto.convertDtoToComment(user);
+        Comment parentComment = post.getComments().stream().filter(c->c.getId().equals(commentId)).findFirst()
+                        .orElseThrow(()->new RuntimeException("id에 해당하는 댓글이 없습니다."));
+        parentComment.addTaggedComment(comment);
+        postRepository.save(post);
     }
 
-    public Comment updateComment(String commentId, Comment commentDetails) {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+    public void updateComment(String postId, String commentId, CommentDto commentDto) {
 
-        if (commentOptional.isPresent()) {
-            Comment comment = commentOptional.get();
-            comment.setContent(commentDetails.getContent());
-            comment.setUpdatedAt(new Date());
-            return commentRepository.save(comment);
-        } else {
-            throw new RuntimeException("Post not found with id " + commentId);
-        }
+        // post 찾기
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글을 찾지 못했씁니다."));
+        // comment 찾기
+        Comment comment = post.getComments().stream().filter(c->c.getId().equals(commentId)).findFirst()
+                .orElseThrow(()->new RuntimeException("id에 해당하는 댓글을 찾지 못했습니다."));
+        //comment 수정
+        comment.setContent(commentDto.getContent());
+        comment.setUpdatedAt(new Date());
+        //게시글 저장
+        postRepository.save(post);
     }
 
-    public void deleteComment(String commentId) {
-        commentRepository.deleteById(commentId);
+    public void updateTaggedComment(String postId, String parentCommentId, String commentId, CommentDto commentDto) {
+
+        // post 찾기
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글을 찾지 못했씁니다."));
+        // comment 찾기
+        Comment parentComment = post.getComments().stream().filter(c->c.getId().equals(parentCommentId)).findFirst()
+                .orElseThrow(()->new RuntimeException("id에 해당하는 댓글을 찾지 못했습니다."));
+
+        Comment comment = parentComment.getTaggedComments().stream().filter(c->c.getId().equals(commentId)).findFirst()
+                .orElseThrow(()->new RuntimeException("id에 해당하는 대댓글을 찾을 수 없습니다."));
+
+        //comment 수정
+        comment.setContent(commentDto.getContent());
+        comment.setUpdatedAt(new Date());
+        //게시글 저장
+        postRepository.save(post);
+    }
+
+    public void deleteComment(String postId, String commentId) {
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("id에 해당하는 게시글을 찾지 못했씁니다."));
+        Comment comment = post.getComments().stream().filter(c->c.getId().equals(commentId)).findFirst()
+                        .orElseThrow(()->new RuntimeException("id에 해당하는 댓글을 찾지 못했습니다."));
+
+        post.getComments().remove(comment);
+        postRepository.save(post);
+    }
+
+    public void deleteTaggedComment(String postId, String parentCommentId, String commentId) {
+        // 1. postId로 게시글 찾기
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("id에 해당하는 게시글을 찾지 못했습니다."));
+
+        // 부모 댓글의 taggedComments에서 해당 댓글을 찾는 경우
+        Comment parentComment = post.getComments().stream()
+                .filter(c -> c.getId().equals(parentCommentId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("부모 댓글을 찾지 못했습니다."));
+
+        // 부모 댓글의 taggedComments에서 commentId로 댓글 찾기
+        Comment comment = parentComment.getTaggedComments().stream()
+                .filter(c -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("id에 해당하는 댓글을 찾지 못했습니다."));
+
+        // taggedComment 삭제
+        parentComment.getTaggedComments().remove(comment);
+        // 4. 변경된 post 저장
+        postRepository.save(post);
     }
 }

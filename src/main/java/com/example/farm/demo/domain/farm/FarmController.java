@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "농장 API", description = "Farm API")
 @RestController
@@ -85,9 +86,9 @@ public class FarmController {
 
     @PostMapping("/createFarm")
     @Operation(summary = "농장 생성", description = "농장을 생성합니다.")
-    public ResponseEntity<Farm> createFarm(@RequestBody CreateFarmDto createFarmDto) {
-        Farm createdFarm = farmService.createFarm(createFarmDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdFarm); // 201 Created 응답
+    public ResponseEntity<String> createFarm(@RequestBody CreateFarmDto createFarmDto) {
+        String farmId = farmService.createFarm(createFarmDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(farmId); // 201 Created 응답
     }
 
     @DeleteMapping("/{id}")

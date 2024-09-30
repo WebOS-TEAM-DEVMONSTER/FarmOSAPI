@@ -25,8 +25,6 @@ public class FarmService {
                 .orElseThrow(()-> new RuntimeException("해당 ID의 농장이 없습니다."));
     }
 
-
-
     public List<Farm> getFarmsByUserId(String userId) {
         return farmRepository.findByUserId(userId);
     }
@@ -45,9 +43,10 @@ public class FarmService {
         farmRepository.save(farm);
     }
 
-    public Farm createFarm(CreateFarmDto createFarmDto) {
+    public String createFarm(CreateFarmDto createFarmDto) {
         Farm farm = createFarmDto.convertDtoToFarm();
-        return farmRepository.save(farm);
+        farmRepository.save(farm);
+        return farm.getId();
     }
 
     public void updateFarmName(String farmId, String newFarmName) {
