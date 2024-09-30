@@ -1,6 +1,7 @@
 package com.example.farm.demo.domain.farm;
 
 import com.example.farm.demo.domain.auth.service.UserService;
+import com.example.farm.demo.domain.farm.dto.CreateFarmDto;
 import com.example.farm.demo.domain.farm.dto.GetFarmCategoryNameDto;
 import com.example.farm.demo.domain.farm.dto.UpdateFarmCategoryNameDto;
 import com.example.farm.demo.domain.farm.dto.UpdateFarmNameDto;
@@ -58,24 +59,31 @@ public class FarmController {
 
     @PatchMapping("/{farmId}/categoryName")
     @Operation(summary = "농장 카테고리 이름 변경", description = "농장의 카테고리 이름을 변경합니다.")
-    public ResponseEntity<Void> patchFarmCategoryName(@PathVariable("farmId") String farmId, @RequestBody UpdateFarmCategoryNameDto request){
+    public ResponseEntity<String> patchFarmCategoryName(@PathVariable("farmId") String farmId, @RequestBody UpdateFarmCategoryNameDto request){
         String newCategoryName = request.getNewCategoryName();
         farmService.updateFarmCategoryName(farmId, newCategoryName);
-        return ResponseEntity.noContent().build(); // 204 No Content 응답
+        return ResponseEntity.ok("농장 카테고리 이름을 변경하였습니다.");// 204 No Content 응답
     }
 
     @PatchMapping("/{farmId}/name")
     @Operation(summary = "농장 이름 변경", description = "농장의 이름을 변경합니다.")
-    public ResponseEntity<Void> patchFarmName(@PathVariable("farmId") String farmId, @RequestBody UpdateFarmNameDto request){
+    public ResponseEntity<String> patchFarmName(@PathVariable("farmId") String farmId, @RequestBody UpdateFarmNameDto request){
         String newFarmName = request.getNewFarmName();
         farmService.updateFarmName(farmId, newFarmName);
-        return ResponseEntity.noContent().build(); // 204 No Content 응답
+        return ResponseEntity.ok("농장 이름을 변경하였습니다.");
+    }
+
+    @PatchMapping("/{farmId}/user")
+    @Operation(summary = "농장 주인 변경", description = "농장 주인을 현재 농장 주인으로 변경합니다.")
+    public ResponseEntity<String> patchFarmUserId(@PathVariable("farmId") String farmId, Authentication authentication){
+        farmService.updateUserId(farmId, authentication);
+        return ResponseEntity.ok("농장 주인을 변경하였습니다.");
     }
 
     @PostMapping
     @Operation(summary = "농장 생성", description = "농장을 생성합니다.")
-    public ResponseEntity<Farm> createFarm(@RequestBody Farm farm) {
-        Farm createdFarm = farmService.createFarm(farm);
+    public ResponseEntity<Farm> createFarm(@RequestBody CreateFarmDto createFarmDto) {
+        Farm createdFarm = farmService.createFarm(createFarmDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFarm); // 201 Created 응답
     }
 
