@@ -16,6 +16,8 @@ public class FarmService {
     
     @Autowired
     private FarmRepository farmRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     public Farm getFarmById(String id) {

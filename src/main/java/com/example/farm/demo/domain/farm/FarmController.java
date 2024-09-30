@@ -23,6 +23,8 @@ public class FarmController {
 
     @Autowired
     private FarmService farmService;
+
+    @Autowired
     private UserService userService;
 
     @GetMapping("/my")
@@ -30,6 +32,7 @@ public class FarmController {
         public ResponseEntity<List<Farm>> getMyFarms(Authentication authentication){
             String userName = authentication.getName();
             String userId = userService.findByUsername(userName).getId(); // 헤더 토큰정보를 통해 유저정보 추출 후 ID 추출
+            System.out.println(userId);
             List<Farm> farms = farmService.getFarmsByUserId(userId); // 유저 정보가 ID인 농장 리스트 정보 추출
 
             return ResponseEntity.ok(farms); // 200 OK 응답
@@ -80,7 +83,7 @@ public class FarmController {
         return ResponseEntity.ok("농장 주인을 변경하였습니다.");
     }
 
-    @PostMapping
+    @PostMapping("/createFarm")
     @Operation(summary = "농장 생성", description = "농장을 생성합니다.")
     public ResponseEntity<Farm> createFarm(@RequestBody CreateFarmDto createFarmDto) {
         Farm createdFarm = farmService.createFarm(createFarmDto);
