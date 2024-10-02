@@ -13,10 +13,6 @@ Farm OS API 서버 입니다.
 
 4. docker-compose up 커맨드라인에 입력 
 
-## 문서 현황(배포 진행 x)
+## 문서 현황
+http://52.63.12.126/swagger-ui/index.html
 
-![alt text](image-2.png)
-
-![alt text](image.png)
-
-![alt text](image-1.png)
