@@ -5,4 +5,5 @@ import java.util.List;
 public interface FarmRepository extends MongoRepository<Farm, String> {
     List<Farm> findByUserId(String userId); // 유저이름으로 농장 검색
     List<Farm> findByFarmCategory(String farmCategory);
+
 }

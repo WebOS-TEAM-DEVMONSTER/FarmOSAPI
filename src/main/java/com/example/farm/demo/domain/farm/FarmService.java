@@ -1,8 +1,13 @@
 package com.example.farm.demo.domain.farm;
 
+import com.example.farm.demo.domain.auth.model.User;
+import com.example.farm.demo.domain.auth.repository.UserRepository;
+import com.example.farm.demo.domain.farm.dto.CreateFarmDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +17,12 @@ public class FarmService {
     @Autowired
     private FarmRepository farmRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    public Optional<Farm> getFarmById(String id) {
-        return farmRepository.findById(id);
+    public Farm getFarmById(String id) {
+        return farmRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("해당 ID의 농장이 없습니다."));
     }
 
     public List<Farm> getFarmsByUserId(String userId) {
@@ -25,21 +33,32 @@ public class FarmService {
         return farmRepository.findByFarmCategory(farmCategory);
     }
 
-    public Farm createFarm(Farm farm) {
-        return farmRepository.save(farm);
+    public void updateUserId (String farmId, Authentication authentication) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(()->new RuntimeException("인증 정보에 해당하는 유저 정보가 없습니다."));
+        String id = user.getId();
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setUserId(id);
+        farm.setUpdatedAt(new Date());
+        farmRepository.save(farm);
     }
 
-    public Farm updateFarm(String id, Farm farmDetails) {
-        Optional<Farm> farmOptional = farmRepository.findById(id);
+    public String createFarm(CreateFarmDto createFarmDto) {
+        Farm farm = createFarmDto.convertDtoToFarm();
+        farmRepository.save(farm);
+        return farm.getId();
+    }
 
-        if (farmOptional.isPresent()) {
-            Farm farm = farmOptional.get();
-            farm.setFarmName(farmDetails.getFarmName());
-            farm.setFarmCategory(farmDetails.getFarmCategory());
-            return farmRepository.save(farm);
-        } else {
-            throw new RuntimeException("헤딩 ID에 해당하는 농장이 없습니다. " + id);
-        }
+    public void updateFarmName(String farmId, String newFarmName) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setFarmName(newFarmName);
+        farmRepository.save(farm);
+    }
+
+    public void updateFarmCategoryName(String farmId, String newFarmCategoryName) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(()->new RuntimeException("해당 ID의 농장이 없습니다."));
+        farm.setFarmCategory(newFarmCategoryName);
+        farmRepository.save(farm);
     }
 
     public void deleteFarm(String id) {

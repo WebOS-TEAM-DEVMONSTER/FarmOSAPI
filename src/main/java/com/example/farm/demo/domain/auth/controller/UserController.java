@@ -1,6 +1,7 @@
 package com.example.farm.demo.domain.auth.controller;
 
 import com.example.farm.demo.domain.auth.dto.UserDto;
+import com.example.farm.demo.domain.auth.model.User;
 import com.example.farm.demo.domain.auth.repository.UserRepository;
 import com.example.farm.demo.domain.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,8 +30,8 @@ public class UserController {
         String username = authentication.getName();
         System.out.println(username);
         // 사용자명을 이용하여 유저 정보 조회
-        UserDto userDto = userService.findByUsername(username);
-
+        User user = userService.findByUsername(username);
+        UserDto userDto = user.convertToUserDto();
         // 유저 정보 반환
         return ResponseEntity.ok(userDto);
     }

@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/v1/test").hasRole("USER")
+                        .requestMatchers("/api/v1/farms/createFarm").permitAll()
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 // JWT 필터 추가

@@ -122,12 +122,8 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
-    public UserDto findByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            return userOptional.get().convertToUserDto();
-        }
-        return null;
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("해당 유저 이름을 찾을 수 없습니다."));
     }
 
 }

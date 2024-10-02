@@ -3,6 +3,7 @@ package com.example.farm.demo.domain.auth.model;
 import com.example.farm.demo.domain.auth.dto.UserDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -30,19 +31,23 @@ public class User implements UserDetails {
     @NonNull
     @Size(max=20)
     @Indexed(unique = true)
+    @NotBlank(message = "이름을 입력해주세요")
     private String username;
 
     @NonNull
+    @NotBlank(message = "이메일을 입력해주세요")
     @Size(max = 50)
     @Email
     private String email;
 
     @NonNull
+    @NotBlank(message = "비밀번호를 입력해주세요")
     @Size(max = 120)
     @JsonIgnore
     private String password;
 
     @NonNull
+    @NotBlank(message = "전화번호를 입력해주세요")
     @Pattern(regexp = "^(010-\\d{4}-\\d{4}|010\\d{8})$", message = "Invalid phone number format")
     private String phoneNumber;
 
