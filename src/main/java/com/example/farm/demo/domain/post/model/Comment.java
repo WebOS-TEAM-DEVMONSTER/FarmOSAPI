@@ -1,5 +1,5 @@
 package com.example.farm.demo.domain.post.model;
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -11,12 +11,20 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
+@Document(collection = "comments")
 public class Comment {
-    @Id private String id;
+
+    @Id
+    private String id;
+
+    private String postId;
 
     @NonNull
     private String commentAuthorId;
@@ -24,35 +32,37 @@ public class Comment {
     @NonNull
     private String commentAuthorName;
 
+    private String commentAuthorImage;
+
+    private String parentCommentId;
+
     @NotBlank
     @Size(max=1000, message = "댓글은 최대 1000자까지 입력 가능합니다.")
     private String content;
 
-    private List<Comment> taggedComments;
+    private List<Comment> taggedComments = new ArrayList<>();
 
-    private Date createdAt;
-    private Date updatedAt;
+    private Date createdAt = new Date();
+    private Date updatedAt = new Date();
 
-    Comment() {
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-    }
-
-    public Comment(User user, String content) {
-        this.commentAuthorId = user.getId();
-        this.commentAuthorName = user.getUsername();
+    public Comment(@NotNull String commentAuthorId, @NotNull String commentAuthorName, String commentAuthorImage,
+                   String postId, String content, String parentCommentId) {
+        this.commentAuthorId = commentAuthorId;
+        this.commentAuthorName = commentAuthorName;
+        this.commentAuthorImage = commentAuthorImage;
+        this.postId = postId;
         this.content = content;
-        this.taggedComments = new ArrayList<>();
+        this.parentCommentId = parentCommentId;
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
-
-    public void addTaggedComment(Comment taggedComment){
+    // 태그된 댓글 추가
+    public void addTaggedComment(Comment taggedComment) {
         taggedComments.add(taggedComment);
     }
 
+    // 태그된 댓글 제거
     public void removeTaggedComment(Comment taggedComment) {
-        // taggedComments 리스트에서 해당 댓글을 제거
         if (taggedComments.contains(taggedComment)) {
             taggedComments.remove(taggedComment);
         } else {
@@ -60,6 +70,7 @@ public class Comment {
         }
     }
 
+    // 태그된 댓글 정렬 후 반환
     public List<Comment> getTaggedComments() {
         taggedComments.sort(Comparator.comparing(Comment::getCreatedAt));
         return taggedComments;

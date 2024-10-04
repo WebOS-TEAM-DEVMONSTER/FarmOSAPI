@@ -4,11 +4,10 @@ import com.example.farm.demo.domain.auth.model.User;
 import com.example.farm.demo.domain.auth.repository.UserRepository;
 import com.example.farm.demo.domain.farm.Farm;
 import com.example.farm.demo.domain.farm.FarmRepository;
-import com.example.farm.demo.domain.post.Dto.PostPatchDto;
-import com.example.farm.demo.domain.post.Dto.PostsGetByTagsDto;
-import com.example.farm.demo.domain.post.Dto.PostsGetSortedDto;
-import com.example.farm.demo.domain.post.Dto.PostCreateTagDto;
+import com.example.farm.demo.domain.post.Dto.*;
 import com.example.farm.demo.domain.post.model.Post;
+import com.example.farm.demo.domain.post.model.SaleStatus;
+import com.example.farm.demo.domain.post.model.ViewFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,24 +41,25 @@ public class PostService {
 //        return postRepository.findAll();
 //    }
 
-    public Page<Post> getPostsByPage(PostsGetByTagsDto postsGetByTagsDto, PostsGetSortedDto postCreateSortDto) {
+    public List<Post> getPostsByPage(PostsGetSortedDto postCreateSortDto, ViewModeDto viewModeDto) {
 
         Pageable pageable = postCreateSortDto.convertSortDtoToPageable();
-        if(postsGetByTagsDto.getTags().isEmpty()){
-            return postRepository.findAll(pageable);
-        } else {
-            List<String> tags = postsGetByTagsDto.getTags();
-            return postRepository.findByTagsIn(tags, pageable);
+        if(viewModeDto.getViewFilter().equals(ViewFilter.VIEW_ON_SALE)){
+            return postRepository.findBySaleStatus(SaleStatus.ON_SALE, pageable);
         }
+        if(viewModeDto.getViewFilter().equals(ViewFilter.VIEW_NOT_ON_SALE)){
+            return postRepository.findBySaleStatus(SaleStatus.NOT_ON_SALE, pageable);
+        }
+        return postRepository.findBy(pageable);
     }
 
     public Post getPostById(String id) {
         return postRepository.findById(id).orElseThrow(()-> new RuntimeException("해당 ID의 게시글이 없습니다."));
     }
 
-    public Page<Post> getPostsByAuthorId(String authorId, PostsGetSortedDto postsGetSortedDto) {
+    public Page<Post> getPostsByAuthorId(String userId, PostsGetSortedDto postsGetSortedDto) {
         Pageable pageable = postsGetSortedDto.convertSortDtoToPageable();
-        return postRepository.findByAuthor_Id(authorId, pageable);
+        return postRepository.findByUser_Id(userId, pageable);
     }
 
     public Page<Post> getPostsByTitle(String title, PostsGetSortedDto postsGetSortedDto) {
@@ -77,5 +77,18 @@ public class PostService {
 
     public void deletePost(String id) {
         postRepository.deleteById(id);
+    }
+
+    public void sellPost(String postId, String buyerId){
+        User user = userRepository.findById(buyerId).orElseThrow(()-> new RuntimeException("구매자 정보가 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new RuntimeException("게시글 정보가 없습니다."));
+
+        if(post.getSaleStatus().equals(SaleStatus.NOT_ON_SALE)){
+            throw new RuntimeException("이미 판매되었습니다.");
+        }
+
+        post.setBuyer(user);
+        postRepository.save(post);
+
     }
 }

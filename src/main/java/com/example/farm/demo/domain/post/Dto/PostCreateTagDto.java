@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,14 +37,14 @@ public class PostCreateTagDto {
     private String farmId;
 
     @Size(max = 5, message = "태그는 최대 5개까지만 입력 가능합니다.")
-    @Schema(description = "태그", example = "태그")
-    private List<
-         @Size(max = 30, message = "각 태그는 최대 30자까지 입력 가능합니다.")
-         String
-        > tags;
+    @Schema(description = "태그")
+    private ArrayList<
+             @Size(max = 30, message = "각 태그는 최대 30자까지 입력 가능합니다.")
+             String
+            > tags;
 
-    @Schema(description = "농작물 이미지", example = "농작물 이미지")
-    private List<String> cropsImages;
+    @Schema(description = "농작물 이미지")
+    private ArrayList<String> cropsImages;
 
     public Post getPostFromDto(User user, Farm farm){
         return new Post(title, price, content, tags, farm, user, cropsImages);

@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter
@@ -36,15 +37,19 @@ public class Post {
     @NonNull
     private Farm farm;
     @NonNull
-    private User author;
+
+    private User user;
     @NonNull
     @NotBlank
     private Long score;
+
+    @NonNull
+    private SaleStatus saleStatus;
+    private User buyer;
+
     @CreatedDate
     private Date createdAt;
     private Date updatedAt;
-    // Embedded 모델링
-    private List<Comment> comments;
 
     public Post(@NonNull String title, Long price, @NonNull String content, List<String> tags, @NonNull Farm farm, @NonNull User user, List<String> cropsImages) {
         this.title = title;
@@ -53,34 +58,11 @@ public class Post {
         this.tags = tags;
         this.cropsImages = cropsImages;
         this.farm = farm;
-        this.author = user;
-
-
+        this.user = user;
+        this.saleStatus = SaleStatus.ON_SALE;
         this.score = 0L;
         this.createdAt = new Date();
         this.updatedAt = new Date();
-        this.comments= new ArrayList<>();
     }
 
-    public void addComment(Comment comment){
-        comments.add(comment);
-    }
-
-    public void removeComment(Comment comment) {
-        // taggedComments 리스트에서 해당 댓글을 제거
-        if (comments.contains(comment)) {
-            comments.remove(comment);
-        } else {
-            throw new IllegalArgumentException("태그된 댓글을 찾을 수 없습니다.");
-        }
-    }
-
-    public List<Comment> sortedComments() {
-        comments.sort(Comparator.comparing(Comment::getCreatedAt));
-        List<Comment> newComment = new ArrayList<>();
-        for(Comment comment : comments){
-
-        }
-        return comments;
-    }
 }

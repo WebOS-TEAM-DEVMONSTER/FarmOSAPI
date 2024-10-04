@@ -15,7 +15,7 @@ public class CommentDto {
     @Size(max=1000, message = "댓글은 최대 1000자까지 입력 가능합니다.")
     private String content;
 
-    public Comment convertDtoToComment(User user){
-        return new Comment(user, content);
+    public Comment convertDtoToComment(User user, String postId, String parentCommentId){
+        return new Comment(user.getId(), user.getUsername(), user.getProfileImage(), postId, content, parentCommentId);
     }
 }

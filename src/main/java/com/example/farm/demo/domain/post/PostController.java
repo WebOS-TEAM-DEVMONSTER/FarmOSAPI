@@ -1,10 +1,7 @@
 package com.example.farm.demo.domain.post;
 
 
-import com.example.farm.demo.domain.post.Dto.PostCreateTagDto;
-import com.example.farm.demo.domain.post.Dto.PostPatchDto;
-import com.example.farm.demo.domain.post.Dto.PostsGetByTagsDto;
-import com.example.farm.demo.domain.post.Dto.PostsGetSortedDto;
+import com.example.farm.demo.domain.post.Dto.*;
 import com.example.farm.demo.domain.post.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,10 +34,11 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "게시글 전체 조회", description = "모든 게시글을 조회합니다.")
-    public ResponseEntity<Page<Post>> getAllPosts(@RequestParam PostsGetByTagsDto postsGetByTagsDto, @RequestParam PostsGetSortedDto postsGetSortedDto) {
-        Page<Post> postPages = postService.getPostsByPage(postsGetByTagsDto,postsGetSortedDto);
+    public ResponseEntity<List<Post>> getAllPosts(@ModelAttribute PostsGetSortedDto postsGetSortedDto, @ModelAttribute ViewModeDto viewModeDto) {
+        List<Post> postPages = postService.getPostsByPage(postsGetSortedDto, viewModeDto);
         return ResponseEntity.ok(postPages);
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "게시글 조회", description = "id를 통해 게시글을 조회합니다.")
@@ -51,7 +49,7 @@ public class PostController {
 
     @GetMapping("/author/{authorId}")
     @Operation(summary = "작성자별 게시글 조회", description = "작성자별 게시글을 조회합니다.")
-    public ResponseEntity<Page<Post>> getPostsByAuthorId(@PathVariable("authorId") String authorId, @RequestParam PostsGetSortedDto postsGetSortedDto) {
+    public ResponseEntity<Page<Post>> getPostsByAuthorId(@PathVariable("authorId") String authorId, @ModelAttribute PostsGetSortedDto postsGetSortedDto) {
         Page<Post> posts = postService.getPostsByAuthorId(authorId, postsGetSortedDto);
         return ResponseEntity.ok(posts);
     }
@@ -74,7 +72,15 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "게시글 삭제", description = "id를 통해 게시글을 삭제합니다.")
-    public void deletePost(@PathVariable("id") String id) {
+    public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
         postService.deletePost(id);
+        return ResponseEntity.ok("게시글이 삭제되었습니다.");
+    }
+
+    @PatchMapping
+    @Operation(summary = "판매", description = "판매합니다.")
+    public ResponseEntity<String> sellPost(@PathVariable("id") String id, String userId){
+        postService.sellPost(id, userId);
+        return ResponseEntity.ok("판매되었습니다.");
     }
 }

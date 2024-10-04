@@ -1,6 +1,5 @@
 package com.example.farm.demo.domain.post.Dto;
 
-import com.example.farm.demo.domain.post.model.Direction;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
@@ -16,34 +15,25 @@ public class PostsGetSortedDto {
 
     @NonNull
     @Min(0)
-    @Schema(description = "페이징 처리(100개의 게시글 정보를 page 페이지, 페이지당 size 개의 post로 분할)", example = "CREATED_AT")
+    @Schema(description = "페이지 번호 (0부터 시작)", example = "0")
     private Integer page;
 
     @NonNull
     @Min(1)
+    @Schema(description = "페이지당 게시글 수", example = "10")
     private Integer size;
 
-    private SortOrder sortOrder;
+    @NonNull
+    @Schema(description = "정렬할 키 (현재는 CREATED_AT만 지원)", example = "CREATED_AT")
+    private String key;
 
-    @Getter
-    @Setter
-    public static class SortOrder {
-        @NonNull
-        @Schema(description = "정렬할 키 현재 CREATED_AT 밖에 없음", example = "CREATED_AT")
-        private String key;
-        @NonNull
-        @Schema(description = "정렬 방향 (ASC, DESC)", example = "ASC")
-        private Direction direction;
+    @NonNull
+    @Schema(description = "정렬 방향 (ASC, DESC)", example = "ASC")
+    private Sort.Direction direction;
+
+    public Pageable convertSortDtoToPageable() {
+        //Sort sort = Sort.by(direction, key);
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        return PageRequest.of(page, size, sort);
     }
-
-    public Pageable convertSortDtoToPageable(){
-        Sort sort;
-        if(sortOrder.direction == Direction.ASC){
-            sort = Sort.by(Sort.Direction.ASC, sortOrder.key);
-        } else {
-            sort = Sort.by(Sort.Direction.DESC, sortOrder.key);
-        }
-        return PageRequest.of(page,size,sort);
-    }
-
 }

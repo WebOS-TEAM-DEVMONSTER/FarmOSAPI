@@ -1,6 +1,7 @@
 package com.example.farm.demo.domain.post;
 
 import com.example.farm.demo.domain.post.model.Post;
+import com.example.farm.demo.domain.post.model.SaleStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,9 +11,10 @@ import java.util.List;
 //Repository MongoDB와 상호작용하기위한 레포지토리
 public interface PostRepository extends MongoRepository<Post, String> {
 
-    Page<Post> findAll(Pageable pageable);
-    Page<Post> findByTagsIn(List<String> tags, Pageable pageable);
-    Page<Post> findByAuthor_Id(String authorId, Pageable pageable);
+    List<Post> findBy(Pageable pageable);
+    List<Post> findBySaleStatus(SaleStatus saleStatus, Pageable pageable);
+    List<Post> findByTagsIn(List<String> tags, Pageable pageable);
+    Page<Post> findByUser_Id(String userId, Pageable pageable);
     Page<Post> findByTitleContaining(String title, Pageable pageable);
 
     //List<Post> findByAuthorId(String authorId);
