@@ -77,7 +77,7 @@ public class PostController {
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
-    @PatchMapping
+    @PatchMapping("/{id}/sell")
     @Operation(summary = "판매", description = "판매합니다.")
     public ResponseEntity<String> sellPost(@PathVariable("id") String id, String userId){
         postService.sellPost(id, userId);
